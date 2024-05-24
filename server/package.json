@@ -1,0 +1,15 @@
+{
+    "name": "hello-word-server",
+    "version": "0.0.1",
+    "private": true,
+    "type": "module",
+    "dependencies": {
+        "@apollo/server": "^4.10.4",
+        "apollo-server": "^3.13.0",
+        "graphql": "^16.8.1",
+        "nodemon": "^3.1.0"
+    },
+    "scripts": {
+        "start": "nodemon index.js"
+    }
+}
