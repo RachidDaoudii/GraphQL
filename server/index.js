@@ -1,30 +1,31 @@
 import { ApolloServer } from '@apollo/server';
-import { startStandaloneServer } from '@apollo/server/standalone';
-// Define the type definitions
-const typeDefs = `#graphql
-  schema {
-    query: Query
-  } 
+import cors from 'cors';
+import express from 'express';
+import { readFile } from "node:fs/promises"
+import { expressMiddleware as apolloMiddleware } from "@apollo/server/express4"
+import { resolvers } from './resolvers.js';
+import 'dotenv/config'
 
-  type Query {
-    greeting: String,
-  }
-`;
+const app = express();
+app.use(cors(), express.json());
 
-// Define the resolvers
-const resolvers = {
-  Query: {
-    greeting: () => "Hello World!",
-  },
-};
-
-// Create an instance of ApolloServer
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
+app.get('/api', (req, res) => {
+    res.send('Hello World hhh !!!');
 });
 
-// Start the server and log the URL
-const { url } = await startStandaloneServer(server, { port: 4000 });
-console.log(`🚀 Server ready at ${url}`);
+const typeDefs = await readFile(new URL("./schema.graphql", import.meta.url), "utf-8");
+const apolloServer = new ApolloServer({
+    typeDefs,
+    resolvers,
+    playground: true,
+    introspection: true,
+});
 
+await apolloServer.start();
+app.use('/graphql',apolloMiddleware(apolloServer));
+
+app.listen({port:process.env.PORT}, () => {
+    console.log(`Server is running at http://localhost:${process.env.PORT}`);
+    console.log(`GraphQL endpoint: http://localhost:${process.env.PORT}/graphql`)
+});
+    
